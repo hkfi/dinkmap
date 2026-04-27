@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { BusynessExplainerDialog } from "@/components/courts/busyness-explainer-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -297,9 +298,6 @@ function CourtSummary({
             {latest.waitingCount !== undefined ? `, ${latest.waitingCount} waiting` : ""}.
           </p>
         ) : null}
-        <p className="mt-2 text-xs text-muted-foreground">
-          Details page shows how the busyness score is calculated.
-        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -674,6 +672,7 @@ export function CourtFinder({ initialCourts }: { initialCourts: CourtWithScore[]
             <Button variant="outline" size="icon" aria-label="Open filters" onClick={() => setFiltersOpen(true)}>
                 <SlidersHorizontal />
             </Button>
+            <BusynessExplainerDialog compact />
             {filtersOpen ? (
               <div className="fixed inset-0 z-50 flex justify-end bg-black/20" role="dialog" aria-modal="true" aria-labelledby="filters-title">
                 <div className="dink-panel h-dvh w-full max-w-sm border-l bg-popover p-4 shadow-xl">
