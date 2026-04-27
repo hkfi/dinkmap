@@ -95,6 +95,13 @@ const nycMapStyle: StyleSpecification = {
         features: [],
       },
     },
+    userLocation: {
+      type: "geojson",
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
+    },
   },
   layers: [
     { id: "osm", type: "raster", source: "osm" },
@@ -119,6 +126,30 @@ const nycMapStyle: StyleSpecification = {
         "circle-stroke-width": 2.5,
       },
     },
+    {
+      id: "user-location-halo",
+      type: "circle",
+      source: "userLocation",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 18, 14, 30],
+        "circle-color": "#2563eb",
+        "circle-opacity": 0.18,
+        "circle-stroke-color": "#2563eb",
+        "circle-stroke-opacity": 0.28,
+        "circle-stroke-width": 2,
+      },
+    },
+    {
+      id: "user-location-dot",
+      type: "circle",
+      source: "userLocation",
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 7, 14, 10],
+        "circle-color": "#2563eb",
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 3,
+      },
+    },
   ],
 };
 
@@ -138,6 +169,26 @@ function courtsToGeoJson(courts: CourtWithScore[]) {
         coordinates: [court.longitude, court.latitude],
       },
     })),
+  };
+}
+
+function userLocationToGeoJson(location: { latitude: number; longitude: number } | null) {
+  return {
+    type: "FeatureCollection" as const,
+    features: location
+      ? [
+          {
+            type: "Feature" as const,
+            properties: {
+              label: "You are here",
+            },
+            geometry: {
+              type: "Point" as const,
+              coordinates: [location.longitude, location.latitude],
+            },
+          },
+        ]
+      : [],
   };
 }
 
@@ -166,9 +217,11 @@ function crowdVibe(level: CrowdLevel) {
 function CourtSummary({
   court,
   onReport,
+  onDismiss,
 }: {
   court: CourtWithScore;
   onReport: (court: CourtWithScore) => void;
+  onDismiss?: () => void;
 }) {
   const latest = court.reports[0];
   const vibe = crowdVibe(court.crowd.level);
@@ -191,9 +244,22 @@ function CourtSummary({
           <h2 className="mt-2 text-xl font-semibold tracking-tight">{court.name}</h2>
           <p className="mt-1 text-sm text-muted-foreground">{court.location}</p>
         </div>
-        <Badge variant="outline" className={crowdBadgeClass(court.crowd.level)}>
-          {court.crowd.level}
-        </Badge>
+        <div className="flex shrink-0 items-center gap-1">
+          <Badge variant="outline" className={crowdBadgeClass(court.crowd.level)}>
+            {court.crowd.level}
+          </Badge>
+          {onDismiss ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Dismiss court card"
+              className="xl:hidden"
+              onClick={onDismiss}
+            >
+              <X />
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <div className="rounded-md border bg-accent/35 p-3">
@@ -488,6 +554,14 @@ export function CourtFinder({ initialCourts }: { initialCourts: CourtWithScore[]
   }, [filteredCourts, filters, mapReady]);
 
   useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+
+    const source = map.getSource("userLocation") as GeoJSONSource | undefined;
+    source?.setData(userLocationToGeoJson(userLocation));
+  }, [mapReady, userLocation]);
+
+  useEffect(() => {
     const interval = window.setInterval(async () => {
       try {
         const response = await fetch("/api/courts");
@@ -517,7 +591,7 @@ export function CourtFinder({ initialCourts }: { initialCourts: CourtWithScore[]
         setUserLocation(location);
         setFilters((current) => ({ ...current, nearMe: true }));
         mapRef.current?.flyTo({ center: [location.longitude, location.latitude], zoom: 12, essential: true });
-        toast.success("Centered near you. Reports still require court-side verification.");
+        toast.success("Added your location to the map. Reports still require court-side verification.");
       },
       () => toast.error("Location permission was not granted."),
       { enableHighAccuracy: true, timeout: 10_000 },
@@ -586,7 +660,12 @@ export function CourtFinder({ initialCourts }: { initialCourts: CourtWithScore[]
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={locateUser} aria-label="Locate me">
+            <Button
+              variant={userLocation ? "default" : "outline"}
+              size="icon"
+              onClick={locateUser}
+              aria-label="Locate me"
+            >
               <LocateFixed />
             </Button>
             <Button variant="outline" size="icon" aria-label="Open filters" onClick={() => setFiltersOpen(true)}>
@@ -701,18 +780,22 @@ export function CourtFinder({ initialCourts }: { initialCourts: CourtWithScore[]
       </aside>
 
       <div className="absolute bottom-4 left-4 right-4 z-10 xl:left-auto xl:right-5 xl:w-[390px]">
-        <Card className="dink-panel rounded-md border-2 border-background/80 shadow-xl">
-          <CardContent className="p-4">
-            {selected ? (
-              <CourtSummary court={selected} onReport={setReporting} />
-            ) : (
-              <div className="text-sm text-muted-foreground">Select a court to see the current estimate.</div>
-            )}
-          </CardContent>
-        </Card>
+        {selected ? (
+          <Card className="dink-panel rounded-md border-2 border-background/80 shadow-xl">
+            <CardContent className="p-4">
+              <CourtSummary court={selected} onReport={setReporting} onDismiss={() => setSelected(null)} />
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
 
       <div className="absolute left-3 top-20 z-10 flex flex-wrap gap-2 xl:left-[410px]">
+        {userLocation ? (
+          <Badge variant="secondary" className="gap-2 border border-background/80 bg-background/95 shadow-sm">
+            <span className="size-2 rounded-full bg-blue-600" />
+            You
+          </Badge>
+        ) : null}
         {(["Low", "Moderate", "Busy", "Packed"] as CrowdLevel[]).map((level) => (
           <Badge key={level} variant="secondary" className="gap-2 border border-background/80 bg-background/95 shadow-sm">
             <span className="size-2 rounded-full" style={{ background: crowdColors[level] }} />
