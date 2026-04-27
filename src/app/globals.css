@@ -139,11 +139,9 @@
   }
 }
 
-/* Header */
+/* Header (no backdrop-filter: keeps fixed-position dialogs working) */
 .dink-header {
-  background-color: oklch(1 0 0 / 80%);
-  -webkit-backdrop-filter: saturate(160%) blur(14px);
-  backdrop-filter: saturate(160%) blur(14px);
+  background-color: oklch(0.99 0.013 150 / 92%);
   border-color: oklch(0.88 0.02 152 / 70%);
   box-shadow: 0 1px 0 oklch(0.2 0.04 175 / 4%);
 }
