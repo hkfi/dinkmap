@@ -6,5 +6,5 @@ export default async function Home() {
   const weather = await getNycWeather();
   const courts = await getCourtsWithScores(weather);
 
-  return <CourtFinder initialCourts={courts} />;
+  return <CourtFinder initialCourts={courts} weather={weather} />;
 }
