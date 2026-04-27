@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { courts, getCourtDetail } from "@/lib/court-service";
+import { crowdCalculationFactors, crowdScoreBands } from "@/lib/crowd-explainer";
 import { getNycWeather } from "@/lib/weather";
 
 export function generateStaticParams() {
@@ -84,6 +85,38 @@ export default async function CourtPage({ params }: { params: Promise<{ slug: st
               <p className="text-xs text-muted-foreground">
                 Updated {new Date(court.crowd.updatedAt).toLocaleString()}. Recent reports influence the estimate for
                 up to two hours.
+              </p>
+            </section>
+
+            <section className="flex flex-col gap-3 rounded-md border bg-card/70 p-4">
+              <div className="flex flex-col gap-1">
+                <h2 className="text-base font-semibold">How busyness is calculated</h2>
+                <p className="text-sm text-muted-foreground">
+                  DinkMap creates a 0-100 score from public court details, current conditions, and verified nearby
+                  reports. It is an estimate, not an official occupancy count.
+                </p>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                {crowdCalculationFactors.map((factor) => (
+                  <div key={factor.title} className="rounded-md border bg-background/70 p-3">
+                    <div className="text-sm font-medium">{factor.title}</div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{factor.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {crowdScoreBands.map((band) => (
+                  <Badge key={band.label} variant="outline" className="bg-background/80">
+                    {band.label}: {band.range}
+                  </Badge>
+                ))}
+              </div>
+
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Reports require browser location and are accepted only within 300 meters of the court. Exact reporter
+                coordinates are used for verification and are not stored.
               </p>
             </section>
 

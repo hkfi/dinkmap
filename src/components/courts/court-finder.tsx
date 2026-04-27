@@ -297,6 +297,9 @@ function CourtSummary({
             {latest.waitingCount !== undefined ? `, ${latest.waitingCount} waiting` : ""}.
           </p>
         ) : null}
+        <p className="mt-2 text-xs text-muted-foreground">
+          Details page shows how the busyness score is calculated.
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">

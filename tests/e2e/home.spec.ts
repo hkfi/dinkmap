@@ -11,6 +11,8 @@ test("loads the court map and opens a court detail route", async ({ page }) => {
   await detailsLink.click();
   await expect(page).toHaveURL(/\/courts\//);
   await expect(page.getByRole("link", { name: /Back to map/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How busyness is calculated" })).toBeVisible();
+  await expect(page.getByText("Low: 0-31")).toBeVisible();
 });
 
 test("opens filters and exposes core controls", async ({ page }) => {
