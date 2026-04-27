@@ -15,16 +15,14 @@
   <path d="M32 9c-9.4 0-17 7.4-17 16.5 0 11.4 13.7 24.6 16 26.7a1.6 1.6 0 0 0 2 0c2.3-2.1 16-15.3 16-26.7C49 16.4 41.4 9 32 9Z" fill="#ffffff" opacity="0.96"/>
   <circle cx="32" cy="25.5" r="9" fill="url(#dm-ball)"/>
   <g fill="#0f6f48" opacity="0.9">
-    <circle cx="29" cy="22" r="0.9"/>
-    <circle cx="33.6" cy="20.7" r="0.9"/>
-    <circle cx="36.4" cy="24" r="0.9"/>
-    <circle cx="35.4" cy="28.4" r="0.9"/>
-    <circle cx="31" cy="30.5" r="0.9"/>
-    <circle cx="27" cy="27.5" r="0.9"/>
-    <circle cx="32" cy="25.5" r="0.9"/>
-    <circle cx="28.2" cy="25.4" r="0.9"/>
-    <circle cx="34" cy="25.2" r="0.9"/>
-    <circle cx="30.6" cy="27.6" r="0.9"/>
-    <circle cx="33" cy="22.8" r="0.9"/>
+    <!-- center hole -->
+    <circle cx="32" cy="25.5" r="0.95"/>
+    <!-- ring of 6 holes at radius 4.2, 60° apart, starting at top -->
+    <circle cx="32" cy="21.3" r="0.95"/>
+    <circle cx="35.638" cy="23.4" r="0.95"/>
+    <circle cx="35.638" cy="27.6" r="0.95"/>
+    <circle cx="32" cy="29.7" r="0.95"/>
+    <circle cx="28.362" cy="27.6" r="0.95"/>
+    <circle cx="28.362" cy="23.4" r="0.95"/>
   </g>
 </svg>
