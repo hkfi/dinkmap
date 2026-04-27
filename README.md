@@ -36,4 +36,8 @@ pnpm test:e2e
 
 ## Deploy
 
-Set the variables in `.env.example`, deploy to Vercel, and keep the `vercel.json` cron active so `/api/cron/refresh-crowd-scores` refreshes every 15 minutes.
+Deploy to Netlify from the GitHub repo. Netlify detects the Next.js App Router app through OpenNext and runs `pnpm build`.
+
+Set the variables in `.env.example` for production persistence. `CRON_SECRET` is optional for local previews, but recommended in Netlify so the scheduled function can call `/api/cron/refresh-crowd-scores` with a bearer token.
+
+`netlify.toml` configures `netlify/functions/refresh-crowd-scores.mjs` to run every 15 minutes.

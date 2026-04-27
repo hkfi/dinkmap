@@ -1,18 +1,18 @@
 # Deployment TODOs
 
-This app is deployable as a Vercel-hosted Next.js MVP, but a few production items remain before treating it as a durable public service.
+This app is deployable as a Netlify-hosted Next.js MVP, but a few production items remain before treating it as a durable public service.
 
 ## Required for First Deploy
 
 - Create a Supabase project.
 - Run `supabase/schema.sql` in Supabase SQL editor or through the Supabase CLI.
-- Add Vercel environment variables:
+- Add Netlify environment variables:
   - `NEXT_PUBLIC_SUPABASE_URL`
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
   - `SUPABASE_SERVICE_ROLE_KEY`
   - `CRON_SECRET`
-- Set the same `CRON_SECRET` value in Vercel and use it for `/api/cron/refresh-crowd-scores`.
-- Confirm the Vercel cron in `vercel.json` is active after deploy.
+- Set `CRON_SECRET` in Netlify so `netlify/functions/refresh-crowd-scores.mjs` can call `/api/cron/refresh-crowd-scores`.
+- Confirm the Netlify scheduled function in `netlify.toml` is active after deploy.
 
 ## Persistence TODOs
 
@@ -44,4 +44,4 @@ This app is deployable as a Vercel-hosted Next.js MVP, but a few production item
 - Add monitoring for cron failures and report insertion failures.
 - Add rate limiting backed by durable storage instead of process memory.
 - Add basic abuse controls for repeated false reports.
-- Add smoke tests against the deployed Vercel preview URL.
+- Add smoke tests against the deployed Netlify preview URL.
