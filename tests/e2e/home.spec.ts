@@ -13,6 +13,7 @@ test("loads the court map and opens a court detail route", async ({ page }) => {
   await expect(page.getByRole("link", { name: /Back to map/i })).toBeVisible();
   await page.getByRole("button", { name: "How busyness is calculated" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.locator("body > [role='dialog']")).toBeVisible();
   await expect(page.getByRole("heading", { name: "How busyness is calculated" })).toBeVisible();
   await expect(page.getByText("model = 18")).toBeVisible();
   await expect(page.getByText("Low: 0-31")).toBeVisible();
